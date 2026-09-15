@@ -7,30 +7,45 @@ export const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
+        path: 'dashboard',
         loadComponent: () =>
-          import('../tab1/tab1.page').then((m) => m.Tab1Page),
+          import('../features/dashboard/pages/dashboard/dashboard.component')
+            .then((m) => m.DashboardComponent),
       },
       {
-        path: 'tab2',
+        path: 'movements',
         loadComponent: () =>
-          import('../tab2/tab2.page').then((m) => m.Tab2Page),
+          import('../features/movements/pages/movements/movements.component')
+            .then((m) => m.MovementsComponent),
       },
       {
-        path: 'tab3',
+        path: 'register',
         loadComponent: () =>
-          import('../tab3/tab3.page').then((m) => m.Tab3Page),
+          import('../features/movements/pages/register-movement/register-movement.component')
+            .then((m) => m.RegisterMovementComponent),
+      },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('../features/reports/pages/reports/reports.component')
+            .then((m) => m.ReportsComponent),
+      },
+      {
+        path: 'more',
+        loadComponent: () =>
+          import('../features/more/pages/more/more.component')
+            .then((m) => m.MoreComponent),
       },
       {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: '/tabs/dashboard',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/dashboard',
     pathMatch: 'full',
   },
 ];
