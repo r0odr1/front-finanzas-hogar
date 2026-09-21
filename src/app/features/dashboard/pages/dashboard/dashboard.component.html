@@ -1,3 +1,13 @@
-<p>
-  dashboard works!
-</p>
+@if (loading()) {
+  <p>Comprobando conexión...</p>
+}
+
+@if (!loading() && health()) {
+  <h2>{{ health()?.api }}</h2>
+  <p>API: {{ health()?.status }}</p>
+  <p>Base de datos: {{ health()?.database }}</p>
+}
+
+@if (!loading() && error()) {
+  <p>No fue posible conectar con la API.</p>
+}
