@@ -1,0 +1,17 @@
+.login-container {
+  max-width: 420px;
+  margin: 80px auto 0;
+}
+
+ion-item {
+  margin-bottom: 16px;
+}
+
+ion-button {
+  margin-top: 24px;
+}
+
+.error {
+  margin-top: 16px;
+  color: var(--ion-color-danger);
+}

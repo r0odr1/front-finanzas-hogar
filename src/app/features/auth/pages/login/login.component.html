@@ -1,0 +1,35 @@
+<ion-content class="ion-padding">
+  <div class="login-container">
+    <h1>Finanzas Hogar</h1>
+    <p>Inicia sesión para continuar.</p>
+
+    <ion-item>
+      <ion-input
+        label="Correo"
+        labelPlacement="stacked"
+        type="email"
+        [(ngModel)]="email">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Contraseña"
+        labelPlacement="stacked"
+        type="password"
+        [(ngModel)]="password">
+      </ion-input>
+    </ion-item>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <ion-button
+      expand="block"
+      [disabled]="loading()"
+      (click)="login()">
+      {{ loading() ? 'Ingresando...' : 'Ingresar' }}
+    </ion-button>
+  </div>
+</ion-content>
