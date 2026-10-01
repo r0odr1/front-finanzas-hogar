@@ -1,13 +1,55 @@
 @if (loading()) {
-  <p>Comprobando conexión...</p>
+  <p>Cargando resumen financiero...</p>
 }
 
-@if (!loading() && health()) {
-  <h2>{{ health()?.api }}</h2>
-  <p>API: {{ health()?.status }}</p>
-  <p>Base de datos: {{ health()?.database }}</p>
+@if (!loading() && noHousehold()) {
+  <h2>Finanzas Hogar</h2>
+  <p>No tienes un hogar configurado.</p>
 }
 
 @if (!loading() && error()) {
-  <p>No fue posible conectar con la API.</p>
+  <p>{{ error() }}</p>
+}
+
+@if (!loading() && summary()) {
+  <h1>{{ summary()?.household?.name }}</h1>
+
+  <p>
+    Periodo:
+    {{ summary()?.period?.month }}/{{ summary()?.period?.year }}
+  </p>
+
+  <h2>Resumen mensual</h2>
+
+  <div>
+    <h3>Ingresos</h3>
+    <p>{{ formatCurrency(summary()?.income?.total ?? 0) }}</p>
+  </div>
+
+  <div>
+    <h3>Gastos</h3>
+    <p>{{ formatCurrency(summary()?.expenses?.total ?? 0) }}</p>
+  </div>
+
+  <div>
+    <h3>Saldo disponible</h3>
+    <p>{{ formatCurrency(summary()?.balance?.total ?? 0) }}</p>
+  </div>
+
+  <div>
+    <h3>Porcentaje utilizado</h3>
+    <p>{{ summary()?.usagePercentage ?? 0 }}%</p>
+  </div>
+
+  <h3>Detalle de ingresos</h3>
+
+  <p>
+    Ingreso base:
+    {{ formatCurrency(summary()?.income?.base ?? 0) }}
+  </p>
+
+  <p>
+    Ingresos adicionales:
+    {{ formatCurrency(summary()?.income?.extra ?? 0) }}
+  </p>
 }
