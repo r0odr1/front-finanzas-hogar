@@ -52,4 +52,27 @@
     Ingresos adicionales:
     {{ formatCurrency(summary()?.income?.extra ?? 0) }}
   </p>
+
+  <h2>Resumen por persona</h2>
+
+  @for (member of summary()?.members ?? []; track member.id) {
+    <div>
+      <h3>{{ member.displayName }}</h3>
+
+      <p>
+        Ingresos:
+        {{ formatCurrency(member.income.total) }}
+      </p>
+
+      <p>
+        Gastos:
+        {{ formatCurrency(member.expenses.total) }}
+      </p>
+
+      <p>
+        Saldo:
+        {{ formatCurrency(member.balance.total) }}
+      </p>
+    </div>
+  }
 }

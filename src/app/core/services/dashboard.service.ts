@@ -24,6 +24,22 @@ export interface MonthlySummary {
     total: number;
   };
   usagePercentage: number;
+
+  members: {
+    id: string;
+    displayName: string;
+    income: {
+      base: number;
+      extra: number;
+      total: number;
+    };
+    expenses: {
+      total: number;
+    };
+    balance: {
+      total: number;
+    };
+  }[];
 }
 
 interface MonthlySummaryResponse {
