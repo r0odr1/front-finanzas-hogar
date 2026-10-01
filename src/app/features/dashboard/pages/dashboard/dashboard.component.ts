@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { IonContent } from '@ionic/angular';
 import { DashboardService, MonthlySummary } from '../../../../core/services/dashboard.service';
 import { HouseholdService } from '../../../../core/services/household.service';
 
@@ -6,7 +7,7 @@ import { HouseholdService } from '../../../../core/services/household.service';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [],
+  imports: [IonContent],
 })
 export class DashboardComponent implements OnInit {
   private readonly householdService = inject(HouseholdService);

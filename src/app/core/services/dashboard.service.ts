@@ -40,6 +40,12 @@ export interface MonthlySummary {
       total: number;
     };
   }[];
+
+  topCategories: {
+    id: string;
+    name: string;
+    total: number;
+  }[];
 }
 
 interface MonthlySummaryResponse {
