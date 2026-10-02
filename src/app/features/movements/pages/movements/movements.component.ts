@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { HouseholdService } from '../../../../core/services/household.service';
 import { Movement, MovementService } from '../../../../core/services/movement.service';
@@ -9,7 +9,7 @@ import { Movement, MovementService } from '../../../../core/services/movement.se
   styleUrls: ['./movements.component.scss'],
   imports: [IonContent],
 })
-export class MovementsComponent implements OnInit {
+export class MovementsComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly movementService = inject(MovementService);
 
@@ -18,7 +18,7 @@ export class MovementsComponent implements OnInit {
   error = signal('');
   noHousehold = signal(false);
 
-  ngOnInit(): void {
+  ionViewWillEnter(): void {
     this.loadMovements();
   }
 
