@@ -1,3 +1,59 @@
-<p>
-  movements works!
-</p>
+<ion-content class="ion-padding">
+
+  <h1>Movimientos</h1>
+
+  @if (loading()) {
+    <p>Cargando movimientos...</p>
+  }
+
+  @if (!loading() && noHousehold()) {
+    <p>No tienes un hogar configurado.</p>
+  }
+
+  @if (!loading() && error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && !noHousehold() && movements().length === 0) {
+    <p>No hay movimientos registrados para este mes.</p>
+  }
+
+  @for (movement of movements(); track movement.id) {
+    <div>
+      <h3>{{ movement.description }}</h3>
+
+      <p>
+        Tipo:
+        {{ movement.type === 'EXPENSE' ? 'Gasto' : 'Ingreso' }}
+      </p>
+
+      <p>
+        Valor:
+        {{ formatCurrency(movement.amount) }}
+      </p>
+
+      <p>
+        Persona:
+        {{ movement.member.displayName }}
+      </p>
+
+      <p>
+        Cuenta:
+        {{ movement.account.name }}
+      </p>
+
+      <p>
+        Categoría:
+        {{ movement.category?.name ?? 'Sin categoría' }}
+      </p>
+
+      <p>
+        Fecha:
+        {{ formatDate(movement.occurredAt) }}
+      </p>
+
+      <hr />
+    </div>
+  }
+
+</ion-content>
