@@ -1,3 +1,92 @@
-<p>
-  register-movement works!
-</p>
+<ion-content class="ion-padding">
+
+  <h1>Registrar movimiento</h1>
+
+  @if (loading()) {
+    <p>Cargando datos...</p>
+  }
+
+  @if (!loading() && error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && catalogs()) {
+
+    <ion-item>
+      <ion-label position="stacked">Tipo</ion-label>
+      <ion-select [(ngModel)]="type">
+        <ion-select-option value="EXPENSE">
+          Gasto
+        </ion-select-option>
+
+        <ion-select-option value="INCOME">
+          Ingreso
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Persona</ion-label>
+      <ion-select [(ngModel)]="memberId">
+        @for (member of catalogs()!.members; track member.id) {
+          <ion-select-option [value]="member.id">
+            {{ member.displayName }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Cuenta</ion-label>
+      <ion-select [(ngModel)]="accountId">
+        @for (account of catalogs()!.accounts; track account.id) {
+          <ion-select-option [value]="account.id">
+            {{ account.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Categoría</ion-label>
+      <ion-select [(ngModel)]="categoryId">
+        <ion-select-option value="">
+          Sin categoría
+        </ion-select-option>
+
+        @for (category of catalogs()!.categories; track category.id) {
+          <ion-select-option [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Valor</ion-label>
+      <ion-input
+        type="number"
+        inputmode="numeric"
+        [(ngModel)]="amount">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Descripción</ion-label>
+      <ion-input
+        type="text"
+        [(ngModel)]="description">
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      [disabled]="saving()"
+      (click)="save()">
+      {{ saving() ? 'Guardando...' : 'Registrar movimiento' }}
+    </ion-button>
+
+  }
+
+</ion-content>
