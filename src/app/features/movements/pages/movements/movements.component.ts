@@ -1,14 +1,31 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, IonContent } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
+import {
+  AlertController,
+  IonButton,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonSelect,
+  IonSelectOption,
+} from '@ionic/angular';
 import { HouseholdService } from '../../../../core/services/household.service';
-import { Movement, MovementService } from '../../../../core/services/movement.service';
+import { Movement, MovementCatalogsResponse, MovementService } from '../../../../core/services/movement.service';
 
 @Component({
   selector: 'app-movements',
   templateUrl: './movements.component.html',
   styleUrls: ['./movements.component.scss'],
-  imports: [IonContent],
+  imports: [
+    FormsModule,
+    IonButton,
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+  ],
 })
 export class MovementsComponent {
   private readonly householdService = inject(HouseholdService);
@@ -20,6 +37,31 @@ export class MovementsComponent {
   loading = signal(true);
   error = signal('');
   noHousehold = signal(false);
+
+  catalogs = signal<MovementCatalogsResponse | null>(null);
+
+  readonly months = [
+    { value: 1, name: 'Enero' },
+    { value: 2, name: 'Febrero' },
+    { value: 3, name: 'Marzo' },
+    { value: 4, name: 'Abril' },
+    { value: 5, name: 'Mayo' },
+    { value: 6, name: 'Junio' },
+    { value: 7, name: 'Julio' },
+    { value: 8, name: 'Agosto' },
+    { value: 9, name: 'Septiembre' },
+    { value: 10, name: 'Octubre' },
+    { value: 11, name: 'Noviembre' },
+    { value: 12, name: 'Diciembre' },
+  ];
+
+  readonly currentYear = new Date().getFullYear();
+
+  selectedMonth = new Date().getMonth() + 1;
+  selectedType: '' | 'EXPENSE' | 'INCOME' = '';
+  selectedMemberId = '';
+  selectedAccountId = '';
+  selectedCategoryId = '';
 
   householdId = '';
 
@@ -44,18 +86,14 @@ export class MovementsComponent {
 
         this.householdId = household.id;
 
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-
-        this.movementService.getMovements(household.id, year, month).subscribe({
-          next: (response) => {
-            this.movements.set(response.movements);
-            this.loading.set(false);
+        this.movementService.getCatalogs(household.id).subscribe({
+          next: (catalogs) => {
+            this.catalogs.set(catalogs);
+            this.loadFilteredMovements();
           },
           error: (error) => {
-            console.error('Error consultando movimientos:', error);
-            this.error.set('No fue posible consultar los movimientos.');
+            console.error('Error consultando catálogos:', error);
+            this.error.set('No fue posible cargar los filtros.');
             this.loading.set(false);
           },
         });
@@ -66,6 +104,53 @@ export class MovementsComponent {
         this.loading.set(false);
       },
     });
+  }
+
+  private loadFilteredMovements(): void {
+    if (!this.householdId) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set('');
+
+    this.movementService
+      .getMovements(
+        this.householdId,
+        this.currentYear,
+        this.selectedMonth,
+        {
+          type: this.selectedType || undefined,
+          memberId: this.selectedMemberId || undefined,
+          accountId: this.selectedAccountId || undefined,
+          categoryId: this.selectedCategoryId || undefined,
+        },
+      )
+      .subscribe({
+        next: (response) => {
+          this.movements.set(response.movements);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error consultando movimientos:', error);
+          this.error.set('No fue posible consultar los movimientos.');
+          this.loading.set(false);
+        },
+      });
+  }
+
+  applyFilters(): void {
+    this.loadFilteredMovements();
+  }
+
+  clearFilters(): void {
+    this.selectedMonth = new Date().getMonth() + 1;
+    this.selectedType = '';
+    this.selectedMemberId = '';
+    this.selectedAccountId = '';
+    this.selectedCategoryId = '';
+
+    this.loadFilteredMovements();
   }
 
   formatCurrency(value: number): string {

@@ -2,6 +2,99 @@
 
   <h1>Movimientos</h1>
 
+  @if (catalogs()) {
+
+    <h2>Filtros</h2>
+
+    <ion-item>
+      <ion-label position="stacked">Mes</ion-label>
+      <ion-select [(ngModel)]="selectedMonth">
+        @for (month of months; track month.value) {
+          <ion-select-option [value]="month.value">
+            {{ month.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tipo</ion-label>
+      <ion-select [(ngModel)]="selectedType">
+        <ion-select-option value="">
+          Todos
+        </ion-select-option>
+
+        <ion-select-option value="EXPENSE">
+          Gastos
+        </ion-select-option>
+
+        <ion-select-option value="INCOME">
+          Ingresos
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Persona</ion-label>
+      <ion-select [(ngModel)]="selectedMemberId">
+        <ion-select-option value="">
+          Todas
+        </ion-select-option>
+
+        @for (member of catalogs()!.members; track member.id) {
+          <ion-select-option [value]="member.id">
+            {{ member.displayName }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Cuenta</ion-label>
+      <ion-select [(ngModel)]="selectedAccountId">
+        <ion-select-option value="">
+          Todas
+        </ion-select-option>
+
+        @for (account of catalogs()!.accounts; track account.id) {
+          <ion-select-option [value]="account.id">
+            {{ account.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Categoría</ion-label>
+      <ion-select [(ngModel)]="selectedCategoryId">
+        <ion-select-option value="">
+          Todas
+        </ion-select-option>
+
+        @for (category of catalogs()!.categories; track category.id) {
+          <ion-select-option [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      (click)="applyFilters()">
+      Aplicar filtros
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="clearFilters()">
+      Limpiar filtros
+    </ion-button>
+
+  }
+
   @if (loading()) {
     <p>Cargando movimientos...</p>
   }
@@ -15,7 +108,7 @@
   }
 
   @if (!loading() && !error() && !noHousehold() && movements().length === 0) {
-    <p>No hay movimientos registrados para este mes.</p>
+    <p>No hay movimientos que coincidan con los filtros seleccionados.</p>
   }
 
   @for (movement of movements(); track movement.id) {

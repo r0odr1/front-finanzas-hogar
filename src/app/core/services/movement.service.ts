@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -27,6 +27,13 @@ export interface Movement {
 
 interface MovementsResponse {
   movements: Movement[];
+}
+
+export interface MovementFilters {
+  type?: 'EXPENSE' | 'INCOME';
+  memberId?: string;
+  accountId?: string;
+  categoryId?: string;
 }
 
 export interface MovementCatalogItem {
@@ -91,9 +98,30 @@ export class MovementService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  getMovements(householdId: string, year: number, month: number): Observable<MovementsResponse> {
+  getMovements(householdId: string, year: number, month: number, filters: MovementFilters = {},):Observable<MovementsResponse> {
+    let params = new HttpParams()
+      .set('year', year)
+      .set('month', month);
+
+    if (filters.type) {
+      params = params.set('type', filters.type);
+    }
+
+    if (filters.memberId) {
+      params = params.set('memberId', filters.memberId);
+    }
+
+    if (filters.accountId) {
+      params = params.set('accountId', filters.accountId);
+    }
+
+    if (filters.categoryId) {
+      params = params.set('categoryId', filters.categoryId);
+    }
+
     return this.http.get<MovementsResponse>(
-      `${this.apiUrl}/movements/${householdId}?year=${year}&month=${month}`,
+      `${this.apiUrl}/movements/${householdId}`,
+      { params },
     );
   }
 
