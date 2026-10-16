@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { AlertController, IonContent } from '@ionic/angular';
 import { HouseholdService } from '../../../../core/services/household.service';
 import { Movement, MovementService } from '../../../../core/services/movement.service';
 
@@ -14,11 +14,14 @@ export class MovementsComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly movementService = inject(MovementService);
   private readonly router = inject(Router);
+  private readonly alertController = inject(AlertController);
 
   movements = signal<Movement[]>([]);
   loading = signal(true);
   error = signal('');
   noHousehold = signal(false);
+
+  householdId = '';
 
   ionViewWillEnter(): void {
     this.loadMovements();
@@ -38,6 +41,8 @@ export class MovementsComponent {
           this.loading.set(false);
           return;
         }
+
+        this.householdId = household.id;
 
         const now = new Date();
         const year = now.getFullYear();
@@ -83,6 +88,52 @@ export class MovementsComponent {
     this.router.navigate(['/tabs/register'], {
       queryParams: {
         movementId: movement.id,
+      },
+    });
+  }
+
+  async confirmDelete(movement: Movement): Promise<void> {
+  const alert = await this.alertController.create({
+    header: 'Eliminar movimiento',
+    message: `¿Seguro que deseas eliminar "${movement.description}"?`,
+    buttons: [
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+      },
+      {
+        text: 'Eliminar',
+        role: 'destructive',
+        handler: () => {
+          this.deleteMovement(movement);
+        },
+      },
+    ],
+  });
+
+  await alert.present();
+}
+
+private deleteMovement(movement: Movement): void {
+  if (!this.householdId) {
+    this.error.set('No se encontró el hogar.');
+    return;
+  }
+
+  this.movementService
+    .deleteMovement(this.householdId, movement.id)
+    .subscribe({
+      next: () => {
+        this.movements.update((movements) =>
+          movements.filter((item) => item.id !== movement.id),
+        );
+      },
+      error: (error) => {
+        console.error('Error eliminando movimiento:', error);
+        this.error.set(
+          error?.error?.message ||
+            'No fue posible eliminar el movimiento.',
+        );
       },
     });
   }

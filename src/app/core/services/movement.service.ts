@@ -75,6 +75,10 @@ interface UpdateMovementResponse {
   movement: Movement;
 }
 
+interface DeleteMovementResponse {
+  message: string;
+}
+
 interface CreateMovementResponse {
   message: string;
   movement: Movement;
@@ -117,6 +121,15 @@ export class MovementService {
     return this.http.patch<UpdateMovementResponse>(
       `${this.apiUrl}/movements/${householdId}/${movementId}`,
       payload,
+    );
+  }
+
+  deleteMovement(
+    householdId: string,
+    movementId: string,
+  ): Observable<DeleteMovementResponse> {
+    return this.http.delete<DeleteMovementResponse>(
+      `${this.apiUrl}/movements/${householdId}/${movementId}`,
     );
   }
 }
