@@ -25,4 +25,8 @@ export class MoreComponent {
   goToCategories(): void {
     this.router.navigate(['/tabs/categories']);
   }
+
+  goToBudgets(): void {
+    this.router.navigate(['/tabs/budgets']);
+  }
 }
