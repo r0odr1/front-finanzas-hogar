@@ -60,6 +60,21 @@ export interface CreateMovementPayload {
   occurredAt: string;
 }
 
+export interface UpdateMovementPayload {
+  memberId: string;
+  accountId: string;
+  categoryId: string | null;
+  type: 'EXPENSE' | 'INCOME';
+  amount: number;
+  description: string;
+  occurredAt: string;
+}
+
+interface UpdateMovementResponse {
+  message: string;
+  movement: Movement;
+}
+
 interface CreateMovementResponse {
   message: string;
   movement: Movement;
@@ -79,17 +94,28 @@ export class MovementService {
   }
 
   getCatalogs(householdId: string): Observable<MovementCatalogsResponse> {
-  return this.http.get<MovementCatalogsResponse>(
-    `${this.apiUrl}/catalogs/${householdId}/movements`,
-  );
-}
+    return this.http.get<MovementCatalogsResponse>(
+      `${this.apiUrl}/catalogs/${householdId}/movements`,
+    );
+  }
 
-createMovement(
-  householdId: string,
-  payload: CreateMovementPayload,
-): Observable<CreateMovementResponse> {
+  createMovement(
+    householdId: string,
+    payload: CreateMovementPayload,
+  ): Observable<CreateMovementResponse> {
     return this.http.post<CreateMovementResponse>(
       `${this.apiUrl}/movements/${householdId}`,
+      payload,
+    );
+  }
+
+  updateMovement(
+    householdId: string,
+    movementId: string,
+    payload: UpdateMovementPayload,
+  ): Observable<UpdateMovementResponse> {
+    return this.http.patch<UpdateMovementResponse>(
+      `${this.apiUrl}/movements/${householdId}/${movementId}`,
       payload,
     );
   }

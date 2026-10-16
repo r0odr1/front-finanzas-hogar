@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { HouseholdService } from '../../../../core/services/household.service';
 import { Movement, MovementService } from '../../../../core/services/movement.service';
@@ -12,6 +13,7 @@ import { Movement, MovementService } from '../../../../core/services/movement.se
 export class MovementsComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly movementService = inject(MovementService);
+  private readonly router = inject(Router);
 
   movements = signal<Movement[]>([]);
   loading = signal(true);
@@ -75,5 +77,13 @@ export class MovementsComponent {
       month: '2-digit',
       day: '2-digit',
     }).format(new Date(value));
+  }
+
+  editMovement(movement: Movement): void {
+    this.router.navigate(['/tabs/register'], {
+      queryParams: {
+        movementId: movement.id,
+      },
+    });
   }
 }

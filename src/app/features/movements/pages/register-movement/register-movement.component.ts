@@ -9,9 +9,10 @@ import {
   IonSelectOption,
 } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HouseholdService } from '../../../../core/services/household.service';
 import {
+  Movement,
   MovementCatalogsResponse,
   MovementService,
 } from '../../../../core/services/movement.service';
@@ -35,6 +36,7 @@ export class RegisterMovementComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly movementService = inject(MovementService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   catalogs = signal<MovementCatalogsResponse | null>(null);
   loading = signal(true);
@@ -50,7 +52,13 @@ export class RegisterMovementComponent {
   amount: number | null = null;
   description = '';
 
+  movementId = '';
+  editing = false;
+  originalOccurredAt = '';
+
   ionViewWillEnter(): void {
+    this.movementId = this.route.snapshot.queryParamMap.get('movementId') ?? '';
+    this.editing = !!this.movementId;
     this.loadData();
   }
 
@@ -74,6 +82,11 @@ export class RegisterMovementComponent {
         this.movementService.getCatalogs(household.id).subscribe({
           next: (catalogs) => {
             this.catalogs.set(catalogs);
+
+            if (this.editing) {
+              this.loadMovement();
+              return;
+            }
 
             if (catalogs.members.length > 0) {
               this.memberId = catalogs.members[0].id;
@@ -135,28 +148,63 @@ export class RegisterMovementComponent {
 
     this.saving.set(true);
 
-    this.movementService.createMovement(this.householdId, {
+    const payload = {
       memberId: this.memberId,
       accountId: this.accountId,
       categoryId: this.categoryId || null,
       type: this.type,
       amount: this.amount,
       description: this.description.trim(),
-      occurredAt: new Date().toISOString(),
-    }).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.resetForm();
-        this.router.navigate(['/tabs/movements']);
-      },
-      error: (error) => {
-        console.error('Error registrando movimiento:', error);
-        this.error.set(
-          error?.error?.message || 'No fue posible registrar el movimiento.',
-        );
-        this.saving.set(false);
-      },
-    });
+      occurredAt: this.editing
+        ? this.originalOccurredAt
+        : new Date().toISOString(),
+    };
+
+    if (this.editing) {
+      this.movementService
+        .updateMovement(
+          this.householdId,
+          this.movementId,
+          payload,
+        )
+        .subscribe({
+          next: () => {
+            this.saving.set(false);
+            this.router.navigate(['/tabs/movements']);
+          },
+          error: (error) => {
+            console.error('Error actualizando movimiento:', error);
+            this.error.set(
+              error?.error?.message ||
+                'No fue posible actualizar el movimiento.',
+            );
+            this.saving.set(false);
+          },
+        });
+
+      return;
+    }
+
+    this.movementService
+      .createMovement(
+        this.householdId,
+        payload,
+      )
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.resetForm();
+          this.router.navigate(['/tabs/movements']);
+        },
+        error: (error) => {
+          console.error('Error registrando movimiento:', error);
+          this.error.set(
+            error?.error?.message ||
+              'No fue posible registrar el movimiento.',
+          );
+          this.saving.set(false);
+        },
+      });
   }
 
   private resetForm(): void {
@@ -169,5 +217,47 @@ export class RegisterMovementComponent {
     this.memberId = catalogs?.members[0]?.id ?? '';
     this.accountId = catalogs?.accounts[0]?.id ?? '';
     this.categoryId = catalogs?.categories[0]?.id ?? '';
+  }
+
+  private loadMovement(): void {
+  const now = new Date();
+
+  this.movementService
+    .getMovements(
+      this.householdId,
+      now.getFullYear(),
+      now.getMonth() + 1,
+    )
+    .subscribe({
+      next: (response) => {
+        const movement = response.movements.find(
+          (item) => item.id === this.movementId,
+        );
+
+        if (!movement) {
+          this.error.set('No fue posible encontrar el movimiento.');
+          this.loading.set(false);
+          return;
+        }
+
+        this.fillForm(movement);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error consultando movimiento:', error);
+        this.error.set('No fue posible cargar el movimiento.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  private fillForm(movement: Movement): void {
+    this.memberId = movement.member.id;
+    this.accountId = movement.account.id;
+    this.categoryId = movement.category?.id ?? '';
+    this.type = movement.type;
+    this.amount = movement.amount;
+    this.description = movement.description;
+    this.originalOccurredAt = movement.occurredAt;
   }
 }

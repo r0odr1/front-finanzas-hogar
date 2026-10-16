@@ -1,6 +1,8 @@
 <ion-content class="ion-padding">
 
-  <h1>Registrar movimiento</h1>
+  <h1>
+    {{ editing ? 'Editar movimiento' : 'Registrar movimiento' }}
+  </h1>
 
   @if (loading()) {
     <p>Cargando datos...</p>
@@ -84,7 +86,11 @@
       class="ion-margin-top"
       [disabled]="saving()"
       (click)="save()">
-      {{ saving() ? 'Guardando...' : 'Registrar movimiento' }}
+      {{
+        saving()
+          ? 'Guardando...' : editing
+          ? 'Guardar cambios' : 'Registrar movimiento'
+      }}
     </ion-button>
 
   }

@@ -52,6 +52,10 @@
         {{ formatDate(movement.occurredAt) }}
       </p>
 
+      <button type="button" (click)="editMovement(movement)">
+        Editar
+      </button>
+
       <hr />
     </div>
   }
