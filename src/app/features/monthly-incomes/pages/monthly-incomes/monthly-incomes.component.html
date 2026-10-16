@@ -1,0 +1,112 @@
+<ion-content class="ion-padding">
+
+  <h1>Ingresos mensuales</h1>
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (success()) {
+    <p>{{ success() }}</p>
+  }
+
+  @if (catalogs()) {
+
+    <ion-item>
+      <ion-label position="stacked">Mes</ion-label>
+
+      <ion-select
+        [(ngModel)]="selectedMonth"
+        (ionChange)="loadMonthlyIncomes()">
+        @for (month of months; track month.value) {
+          <ion-select-option [value]="month.value">
+            {{ month.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Persona</ion-label>
+
+      <ion-select [(ngModel)]="memberId">
+        @for (member of catalogs()!.members; track member.id) {
+          <ion-select-option [value]="member.id">
+            {{ member.displayName }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Cuenta</ion-label>
+
+      <ion-select [(ngModel)]="accountId">
+        @for (account of catalogs()!.accounts; track account.id) {
+          <ion-select-option [value]="account.id">
+            {{ account.name }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Valor mensual</ion-label>
+
+      <ion-input
+        type="number"
+        inputmode="numeric"
+        [(ngModel)]="amount">
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      [disabled]="saving()"
+      (click)="save()">
+      {{ saving() ? 'Guardando...' : 'Guardar ingreso mensual' }}
+    </ion-button>
+
+  }
+
+  @if (loading()) {
+    <p>Cargando ingresos...</p>
+  }
+
+  @if (!loading()) {
+
+    <h2>
+      Total:
+      {{ formatCurrency(total()) }}
+    </h2>
+
+    @if (incomes().length === 0) {
+      <p>No hay ingresos mensuales registrados para este mes.</p>
+    }
+
+    @for (income of incomes(); track income.id) {
+      <div>
+
+        <h3>
+          {{ income.member.displayName }}
+        </h3>
+
+        <p>
+          Cuenta:
+          {{ income.account.name }}
+        </p>
+
+        <p>
+          Valor:
+          {{ formatCurrency(income.amount) }}
+        </p>
+
+        <hr />
+
+      </div>
+    }
+
+  }
+
+</ion-content>

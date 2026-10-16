@@ -17,4 +17,8 @@ export class MoreComponent {
     this.authService.logout();
     this.router.navigateByUrl('/auth/login', { replaceUrl: true });
   }
+
+  goToMonthlyIncomes(): void {
+    this.router.navigate(['/tabs/monthly-incomes']);
+  }
 }

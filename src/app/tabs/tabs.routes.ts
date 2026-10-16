@@ -43,6 +43,12 @@ export const routes: Routes = [
         redirectTo: '/tabs/dashboard',
         pathMatch: 'full',
       },
+      {
+        path: 'monthly-incomes',
+        loadComponent: () =>
+          import('../features/monthly-incomes/pages/monthly-incomes/monthly-incomes.component')
+            .then((m) => m.MonthlyIncomesComponent),
+      },
     ],
   },
   {
