@@ -21,4 +21,8 @@ export class MoreComponent {
   goToMonthlyIncomes(): void {
     this.router.navigate(['/tabs/monthly-incomes']);
   }
+
+  goToCategories(): void {
+    this.router.navigate(['/tabs/categories']);
+  }
 }

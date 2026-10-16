@@ -49,6 +49,12 @@ export const routes: Routes = [
           import('../features/monthly-incomes/pages/monthly-incomes/monthly-incomes.component')
             .then((m) => m.MonthlyIncomesComponent),
       },
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('../features/categories/pages/categories/categories.component')
+            .then((m) => m.CategoriesComponent),
+      },
     ],
   },
   {

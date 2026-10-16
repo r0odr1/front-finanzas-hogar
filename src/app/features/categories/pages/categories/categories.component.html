@@ -1,0 +1,77 @@
+<ion-content class="ion-padding">
+
+  <h1>Categorías</h1>
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (success()) {
+    <p>{{ success() }}</p>
+  }
+
+  <ion-item>
+    <ion-label position="stacked">
+      {{ editingCategoryId ? 'Editar categoría' : 'Nueva categoría' }}
+    </ion-label>
+
+    <ion-input
+      type="text"
+      [(ngModel)]="name">
+    </ion-input>
+  </ion-item>
+
+  <ion-button
+    expand="block"
+    class="ion-margin-top"
+    [disabled]="saving()"
+    (click)="save()">
+    {{
+      saving()
+        ? 'Guardando...'
+        : editingCategoryId
+          ? 'Guardar cambios'
+          : 'Crear categoría'
+    }}
+  </ion-button>
+
+  @if (editingCategoryId) {
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="cancelEdit()">
+      Cancelar edición
+    </ion-button>
+  }
+
+  @if (loading()) {
+    <p>Cargando categorías...</p>
+  }
+
+  @if (!loading() && categories().length === 0) {
+    <p>No hay categorías activas.</p>
+  }
+
+  @for (category of categories(); track category.id) {
+    <div>
+
+      <h3>{{ category.name }}</h3>
+
+      <button
+        type="button"
+        (click)="edit(category)">
+        Editar
+      </button>
+
+      <button
+        type="button"
+        (click)="confirmDelete(category)">
+        Eliminar
+      </button>
+
+      <hr />
+
+    </div>
+  }
+
+</ion-content>
